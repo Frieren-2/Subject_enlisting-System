@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="margin: 0 0 32px 0;">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0 text-white">List of Subject</h5>
+        <span class="badge bg-light text-dark" id="subjectCount">{{ subjects | length }} Subjects</span>
+    </div>
+    <!-- Filters Section -->
+    <div class="filters-section mb-4">
+        <div class="row g-3">
+            <!-- Search Bar -->
+            <div class="col-12 mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-light border-secondary">
+                        <i class="bx bx-search"></i>
+                    </span>
+                    <input type="text" id="subjectSearch" 
+                        class="form-control bg-dark text-light border-secondary" 
+                        placeholder="Search subjects..." 
+                        value="{{ request.args.get('search', '') }}">
+                </div>
+            </div>
+            <!-- Sort Dropdowns -->
+            <div class="col-md-6 mb-3">
+                <label for="sortCourse" class="form-label">Sort by Course</label>
+                <select id="sortCourse" class="form-select bg-dark text-light border-secondary">
+                    <option value="">All Courses</option>
+                    <option value="BS Computer Science">BS Computer Science</option>
+                    <option value="BS Information Technology">BS Information Technology</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="sortYearLevel" class="form-label">Sort by Year</label>
+                <select id="sortYearLevel" class="form-select bg-dark text-light border-secondary">
+                    <option value="">All Years</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- Card Section -->
+    <div class="subject-card-list" id="subjectCardList">
+        {% for subject in subjects %}
+        <div class="subject-card"
+            data-subject-id="{{ subject.subject_id }}"
+            data-subject-code="{{ subject.subject_code }}"
+            data-subject-name="{{ subject.subject }}"
+            data-course="{{ subject.course }}"
+            data-units="{{ subject.units }}"
+            data-room="{{ subject.room }}"
+            data-year-level="{{ subject.year_level }}"
+            data-semester="{{ subject.semester }}"
+            data-instructor-id="{{ subject.instructor_id }}"
+            data-start-time="{{ subject.start_time }}"
+            data-end-time="{{ subject.end_time }}"
+            data-days="{{ subject.days|join(',') if subject.days is defined else '' }}"
+            onclick="showSubjectModal(this)">
+            <div class="subject-card-header">
+                <span class="subject-name">{{ subject.subject }}</span>
+                <span class="subject-code">Code: {{ subject.subject_code }}</span>
+                <span class="subject-course">Course: {{ subject.course }}</span>
+                <span class="subject-units">Units: {{ subject.units }}</span>
+                <span class="subject-year">Year: {{ subject.year_level }}</span>
+                <span class="subject-semester">Semester: {{ subject.semester }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal for Editing Subject -->
+<div id="subjectModal" class="modal" tabindex="-1" style="display:none; background-color: rgba(0,0,0,0.7); position:fixed; top:0; left:0; width:100%; height:100%; padding: 20px;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 900px; width: 90%;">
+    <div class="modal-content bg-dark text-light p-3">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="editSubjectLabel">Edit Subject Details</h5>
+        <button type="button" class="btn-close" onclick="closeSubjectModal()" style="color: #f8f9fa;"></button>
+      </div>
+      <!-- Form to insert the subject availability -->
+      <form id="editSubjectForm" action="/insert_subject_avail" method="POST">
+        <input type="hidden" name="subject_id" id="modalSubjectId">
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Subject Code -->
+            <div class="col-md-6">
+              <label for="modalSubjectCode" class="form-label">Subject Code</label>
+              <input type="text" class="form-control bg-dark text-light" id="modalSubjectCode" name="subject_code" required>
+            </div>
+            <!-- Subject Name -->
+            <div class="col-md-6">
+              <label for="modalSubjectName" class="form-label">Subject Name</label>
+              <input type="text" class="form-control bg-dark text-light" id="modalSubjectName" name="subject" required>
+            </div>
+            <!-- Course -->
+            <div class="col-md-6">
+              <label for="modalCourse" class="form-label">Course</label>
+              <select class="form-select bg-dark text-light" id="modalCourse" name="course" required>
+                <option value="BS Computer Science">BS Computer Science</option>
+                <option value="BS Information Technology">BS Information Technology</option>
+              </select>
+            </div>
+            <!-- Units -->
+            <div class="col-md-6">
+              <label for="modalUnits" class="form-label">Units</label>
+              <select class="form-select bg-dark text-light" id="modalUnits" name="units" required>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+            <!-- Room -->
+            <div class="col-md-6">
+              <label for="modalRoom" class="form-label">Room</label>
+              <input type="text" class="form-control bg-dark text-light" id="modalRoom" name="room" required>
+            </div>
+            <!-- Time -->
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col">
+                  <label for="modalStartTime" class="form-label">Start Time</label>
+                  <input type="time" class="form-control bg-dark text-light" id="modalStartTime" name="start_time" required>
+                </div>
+                <div class="col">
+                  <label for="modalEndTime" class="form-label">End Time</label>
+                  <input type="time" class="form-control bg-dark text-light" id="modalEndTime" name="end_time" required>
+                </div>
+              </div>
+            </div>
+            <!-- Day of the Week -->
+            <div class="col-12">
+              <label class="form-label">Day of the Week</label>
+              <div class="row" id="modalDaysRow">
+                {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+                  <div class="col-md-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="modalDay_{{ day }}" name="days" value="{{ day }}">
+                      <label class="form-check-label" for="modalDay_{{ day }}">
+                        {{ day }}
+                      </label>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <!-- Year Level -->
+            <div class="col-md-4">
+              <label for="modalYearLevel" class="form-label">Year Level</label>
+              <select class="form-select bg-dark text-light" id="modalYearLevel" name="year" required>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+            </div>
+            <!-- Semester -->
+            <div class="col-md-4">
+              <label for="modalSemester" class="form-label">Semester</label>
+              <select class="form-select bg-dark text-light" id="modalSemester" name="semester" required>
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+              </select>
+            </div>
+            <!-- Instructor Name -->
+            <div class="col-md-4">
+              <label for="modalInstructorName" class="form-label">Instructor Name</label>
+              <select class="form-select bg-dark text-light" id="modalInstructorName" name="instructor_id" required>
+                {% for instructor in instructors %}
+                  <option value="{{ instructor.instructor_id }}">{{ instructor.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Close</button>
+          <button type="submit" class="btn btn-warning">Open Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Warning Card -->
+<div id="popupWarning" class="popup-warning" style="display:none;">
+  <span class="popup-icon">&#9888;</span>
+  <span id="popupWarningMsg"></span>
+  <button class="popup-close" onclick="hidePopupWarning()" aria-label="Close">&times;</button>
+</div>
+
+<script>
+// Show popup warning with message
+function showPopupWarning(msg, timeout=3500) {
+  var popup = document.getElementById('popupWarning');
+  var msgSpan = document.getElementById('popupWarningMsg');
+  msgSpan.textContent = msg;
+  popup.style.display = 'flex';
+  setTimeout(() => {
+    popup.classList.add('show');
+  }, 10);
+  // Auto-hide after timeout
+  if (timeout > 0) {
+    if (popup.hideTimeout) clearTimeout(popup.hideTimeout);
+    popup.hideTimeout = setTimeout(hidePopupWarning, timeout);
+  }
+}
+
+// Hide popup warning
+function hidePopupWarning() {
+  var popup = document.getElementById('popupWarning');
+  popup.classList.remove('show');
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 400);
+}
+</script>
+
+{% endblock %}

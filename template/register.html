@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-container">
+  <div class="left-section">
+    <h2 style="margin-bottom: 1rem;"><i class="fas fa-chalkboard-teacher"></i> Instructor Registration</h2>
+    <p style="font-size:1.08rem; color:var(--label-color); margin-bottom:2rem;">
+      Welcome! Register new instructors here.<br>
+      Use the form to add instructors. You can view, edit, or remove instructors anytime.
+    </p>
+    <ul style="color:var(--label-color); font-size:0.98rem; padding-left:1.2em;">
+      <li>Fill in all required fields.</li>
+      <li>Passwords must match.</li>
+      <li>Click "View Registered Instructors" to manage accounts.</li>
+    </ul>
+  </div>
+  <div class="right-section">
+    <div class="register-card">
+      <div class="card-header">
+        <h2><i class="fas fa-user-plus"></i> Register Instructor</h2>
+        <p>Create a new instructor account below</p>
+      </div>
+      <form id="registerForm" autocomplete="off">
+        <div class="form-group">
+          <div class="input-field">
+            <input required type="text" id="name" name="name" placeholder="Full Name" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-field">
+            <input required type="text" id="username" name="username" placeholder="Username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-field">
+            <input required type="password" id="password" name="password" placeholder="Password" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-field">
+            <input required type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" />
+            <span class="password-error" style="color:#ef4444;font-size:0.95em;"></span>
+          </div>
+        </div>
+        <input type="hidden" name="usertype" value="instructor" />
+        <button type="submit" class="submit-btn"><i class="fas fa-user-plus"></i> Register</button>
+      </form>
+      <button class="submit-btn" style="background:transparent; color:var(--text-color); border:1.5px solid var(--primary-color); margin-top:1.5rem;" id="viewInstructorsBtn">
+        <i class="fas fa-users"></i> View Registered Instructors
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade modern-modal" id="instructorModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title"><i class="fas fa-users"></i> Registered Instructors</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
+      </div>
+      <div class="modal-body">
+        <table class="admin-table" id="instructorTable">
+          <thead>
+            <tr>
+              <th><i class="fas fa-user"></i> Name</th>
+              <th><i class="fas fa-user-tag"></i> Username</th>
+              <th><i class="fas fa-key"></i> Password</th>
+              <th><i class="fas fa-cogs"></i> Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Example row for reference; JS should generate similar markup -->
+            <!--
+            <tr>
+              <td>John Doe</td>
+              <td>johndoe</td>
+              <td>••••••••</td>
+              <td>
+                <button class="admin-action-btn edit-btn" title="Edit Password">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="admin-action-btn delete-btn" title="Delete Instructor">
+                  <i class="fas fa-trash-alt"></i> Delete
+                </button>
+              </td>
+            </tr>
+            -->
+            <!-- JS will populate -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Password Modal -->
+<div class="modal fade modern-modal" id="editPasswordModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title"><i class="fas fa-key"></i> Edit Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="closeEditModalBtn"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editPasswordForm">
+          <input type="hidden" id="edit-username" name="username" />
+          <div class="form-group">
+            <div class="input-field">
+              <input required type="password" id="edit-password" name="password" placeholder="New Password" />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-field">
+              <input required type="password" id="edit-confirm-password" name="confirm_password" placeholder="Confirm New Password" />
+              <span class="edit-password-error" style="color:#ef4444;font-size:0.95em;"></span>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" style="background:var(--success-color);color:#fff;"><i class="fas fa-save"></i> Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %}

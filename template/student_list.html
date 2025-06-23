@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* Remove card background and border for main container */
+</style>
+
+<div class="search-bar-container">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search students..." style="background-color: #3a3a3a; color: #fff; border: 1px solid #555;">
+</div>
+
+<div class="admin-student-table-container dashboard-card" style="margin-top:0;">
+    <div class="student-card-list" id="studentCardList">
+        {% for student in students %}
+        <div class="student-card" 
+             data-student-id="{{ student.student_id }}"
+             data-name="{{ student.name }}"
+             data-usn="{{ student.USN }}"
+             data-program="{{ student.course }}"
+             data-year="{{ student.year|default('') }}"
+             data-units="{{ student.total_units|default(0) }}"
+             onclick="showStudentModal(this)">
+            <div class="student-card-header">
+                <span>{{ student.name }}</span>
+                <span class="program">{{ student.course }}</span>
+                <span class="units">Year: {{ student.year }}</span>
+                <span class="units">USN: {{ student.USN }}</span>
+                <span class="units">Units: {{ student.total_units|default(0) }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="studentModal" class="modal" tabindex="-1" style="display:none; background-color: rgba(0,0,0,0.7); position:fixed; top:0; left:0; width:100%; height:100%; padding: 20px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 900px; width: 90%;">
+        <div class="modal-content p-3" style="background-color: #333; color: #fff;">
+            <div class="modal-header" style="border-bottom: 1px solid #444;">
+                <h5 class="modal-title">Student Information</h5>
+                <button type="button" class="btn-close" onclick="closeModal()" style="color: #f8f9fa;"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Student Info Left -->
+                    <div class="col-md-4" style="border-right: 1px solid #444;">
+                        <p><strong>Name:</strong> <span id="modalName"></span></p>
+                        <p><strong>USN/ID:</strong> <span id="modalUsn"></span></p>
+                        <p><strong>Program:</strong> <span id="modalProgram"></span></p>
+                        <p><strong>Year:</strong> <span id="modalYear"></span></p>
+                        <p><strong>Current Units:</strong> <span id="modalUnits"></span></p>
+                        <div id="scheduleConflicts" class="alert alert-warning mt-3" style="display: none;">
+                            <h6>Schedule Conflicts:</h6>
+                            <div id="conflictsList"></div>
+                        </div>
+                    </div>
+                    <!-- Subjects Table Right -->
+                    <div class="col-md-8">
+                        <h6>Enrolled Subjects</h6>
+                        <div id="enrolledSubjects" class="table-responsive">
+                            <table class="table table-dark table-hover" style="font-size: 15px;">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Subject</th>
+                                        <th>Units</th>
+                                        <th>Day/Time</th>
+                                        <th>Room</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsTableBody">
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" style="text-align:right;"><strong>Total Units:</strong></td>
+                                        <td id="totalUnits" style="font-weight:bold;"></td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/student_list.js') }}" defer></script>
+{% endblock %}
